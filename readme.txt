@@ -1,8 +1,6 @@
 notes for uday man:
 maybe we have a "uninstall button" to uninstall all or something.
 
-Xn%66v9q
-
 
 todo:
 list dynamic checks √ 

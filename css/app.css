@@ -2,3 +2,8 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
+@media only screen and (max-width: 992px) {
+  nav .brand-logo {
+  left: 60px;  
+}

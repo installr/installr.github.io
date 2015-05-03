@@ -24,9 +24,8 @@ app.controller('MainCtrl', function ($scope, grabCasks){
   };
   $scope.install = true;
   $scope.genScript = function() {
-    // var url = server + "/i/" + $scope.user.apps.map(function(app) { return app.caskName }).join("%");
     var i = $scope.install == true ? "i" : "u";
-    var url = "curl -o installr " + server + "/installr && curl -o .installr.local " + server + "/" + i + "/ammonite && sh installr 2>&1 | tee ~/installr.log"
+    var url = "curl -o installr http://installr.io/installr && curl -o .installr.local " + server + "/" + i + "/ammonite && sh installr 2>&1 | tee ~/installr.log"
     return url;
   };
 });
