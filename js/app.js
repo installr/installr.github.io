@@ -1,4 +1,5 @@
 var server = "http://installr.herokuapp.com/"
+// var server = "http://freeslugs.ngrok.com/"
 
 var app = angular.module('app', ["checklist-model"]);
 
