@@ -1,4 +1,4 @@
-var server = "localhost:5000"
+var server = "http://installr.herokuapp.com/"
 
 var app = angular.module('app', ["checklist-model"]);
 
@@ -25,7 +25,8 @@ app.controller('MainCtrl', function ($scope, grabCasks){
   $scope.install = true;
   $scope.genScript = function() {
     var i = $scope.install == true ? "i" : "u";
-    var url = "curl -o installr http://installr.io/installr && curl -o .installr.local " + server + "/" + i + "/ammonite && sh installr 2>&1 | tee ~/installr.log"
+    var apps = $scope.user.apps.map(function(app) { return app.caskName }).join("%");
+    var url = "curl -o installr http://installr.io/installr && curl -o .installr.local " + server + i + "/" + apps + " && sh installr 2>&1 | tee ~/installr.log"
     return url;
   };
 });
