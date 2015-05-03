@@ -1,0 +1,94 @@
+#!/bin/sh
+
+# Welcome to Installr - it's so fast we didn't have time to spell it right
+
+pretty_printf() {
+  local print_statement="$1"; shift
+
+  # shellcheck disable=SC2059
+  printf "\n$print_statement\n" "$@"
+}
+
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
+set -e
+
+if [ ! -d "$HOME/.bin/" ]; then
+  mkdir "$HOME/.bin"
+fi
+
+brew_install_or_upgrade() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      pretty_printf "Installr is upgrading  %s ..." "$1"
+      brew upgrade "$@"
+    else
+      pretty_printf "Installr says you're  using the latest version of %s. Skipping ..." "$1"
+    fi
+  else
+    pretty_printf "Installr is installing %s ..." "$1"
+    brew install "$@"
+  fi
+}
+
+brew_is_installed() {
+  local name="$(brew_expand_alias "$1")"
+
+  brew list -1 | grep -Fqx "$name"
+}
+
+brew_is_upgradable() {
+  local name="$(brew_expand_alias "$1")"
+
+  ! brew outdated --quiet "$name" >/dev/null
+}
+
+brew_tap() {
+  brew tap "$1" 2> /dev/null
+}
+
+brew_cask_install() {
+  brew cask install "$1" 2> /dev/null
+}
+
+brew_cask_uninstall() {
+  brew cask uninstall "$1" 2> /dev/null
+}
+
+brew_expand_alias() {
+  brew info "$1" 2>/dev/null | head -1 | awk '{gsub(/:/, ""); print $1}'
+}
+
+brew_launchctl_restart() {
+  local name="$(brew_expand_alias "$1")"
+  local domain="homebrew.mxcl.$name"
+  local plist="$domain.plist"
+
+  pretty_printf "Restarting %s ..." "$1"
+  mkdir -p "$HOME/Library/LaunchAgents"
+  ln -sfv "/usr/local/opt/$name/$plist" "$HOME/Library/LaunchAgents"
+
+  if launchctl list | grep -Fq "$domain"; then
+    launchctl unload "$HOME/Library/LaunchAgents/$plist" >/dev/null
+  fi
+  launchctl load "$HOME/Library/LaunchAgents/$plist" >/dev/null
+}
+
+if ! command -v brew >/dev/null; then
+  pretty_printf "Installr is installing Homebrew ..."
+    curl -fsS \
+      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+
+    export PATH="/usr/local/bin:$PATH"
+else
+  pretty_printf "Homebrew already installed. Skipping ..."
+fi
+
+pretty_printf "Installr is updating Homebrew formulas ..."
+brew update
+
+brew_install_or_upgrade 'caskroom/cask/brew-cask'
+
+if [ -f "$HOME/.installr.local" ]; then
+  . "$HOME/.installr.local"
+fi
