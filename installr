@@ -88,7 +88,7 @@ pretty_printf "Installr is updating Homebrew formulas ..."
 brew update
 
 brew_tap 'caskroom/cask'
-brew_install_or_upgrade 'caskroom/cask/brew-cask'
+brew_install_or_upgrade 'brew-cask'
 
 if [ -f "$HOME/.installr.local" ]; then
   . "$HOME/.installr.local"
