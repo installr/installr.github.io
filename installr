@@ -59,10 +59,6 @@ brew_cask_uninstall() {
   brew cask uninstall "$1" 2> /dev/null
 }
 
-brew_cleanup() {
-  brew cleanup && brew cask cleanup
-}
-
 brew_expand_alias() {
   brew info "$1" 2>/dev/null | head -1 | awk '{gsub(/:/, ""); print $1}'
 }
@@ -97,8 +93,6 @@ brew update
 
 brew_tap 'caskroom/cask'
 brew_install_or_upgrade 'brew-cask'
-brew_untap 'caskroom/cask'
-brew_cleanup
 
 if [ -f "$HOME/.installr.local" ]; then
   . "$HOME/.installr.local"
